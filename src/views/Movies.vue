@@ -17,23 +17,43 @@
 						v-text-field(prepend-icon="search" v-model="search" @input="currentPage=1" label="Search movies list")
 				v-layout(row wrap )
 					v-flex.text-xs-center(fluid)
+						v-card(color="grey lighten-2")
+							v-card-title.display-2.light-blue--text Add movies to list
+							v-divider
+							v-card-text
+								v-text-field(prepend-icon="add" v-model="movies.title" label="Add movies")
+								v-text-field(prepend-icon="add" v-model="movies.description" label="Add movies description")
+							v-alert(type="info" :value="showMasage" dismissible) You can add some movies description later.
+							v-card-actions
+								v-btn(color="primary" @click="addMovie" :disabled="checkField")
+									v-icon add
+									| Add
+								v-spacer
+								v-btn(color="success" @click='onSubmit')
+									v-icon save
+									| Save
 						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
 
 </template>
 <script>
-import firebase from 'firebase/app'
 export default {
 	data:()=>({
+		movies:{
+			"title":"",
+			"description":""
+		},
 		showMasage: false,
 		search: "",
 		currentPage: 1,
 		perPage: 7,
 		setMoviesListOnPage: 5,
-		list: []
 	}),
 	computed:{
 		moviesList(){
-			return this.list
+			return this.$store.getters.moviesList
+		},
+		checkField(){
+			return this.movies.title.length<3
 		},
 		filteredList(){
 			return this.moviesList.filter( post => {
@@ -48,20 +68,28 @@ export default {
 		}
 	},
 	created(){
-		firebase.database().ref('defaultMoviesList').once('value')
-			.then(snapshot=>{
-				let lists = snapshot.val();
-				const arrList = [];
-				Object.keys(lists).map(key=>{
-					arrList.push(lists[key]);
-				});
-				this.list = arrList[0];
-			})
-			.catch(error => console.log(error));
+		this.moviesList
 	},
 	methods:{
 		deleteMovie(index){
 			this.$store.commit("deleteMovie", index);
+		},
+		onSubmit(){
+			this.$store.dispatch("SET_MOVIES_LIST")
+		},
+		addMovie(){
+			this.v_alert()
+			this.$store.commit("addMovie", this.movies);
+			this.movies = {
+				"title":"",
+				"description":""
+			}
+		},
+		v_alert(){
+			if(!this.movies.description.length){
+				this.showMasage = true
+				setTimeout(() => this.showMasage = false, 10000)
+			}
 		},
 		paginator(list){
 			let page = this.currentPage;
@@ -70,8 +98,7 @@ export default {
 			let to = (page * setMoviesListOnPage);
 			return list.slice(from, to);
 		}
-
-	}
+	},
 }
 </script>
 <style lang="sass" scoped>
