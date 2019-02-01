@@ -6,7 +6,7 @@ import Login from '@/views/Login.vue'
 import SingUp from '@/views/SingUp.vue'
 import store from '@/store/store'
 Vue.use(Router)
-export default new Router({
+const router = new Router({
 	mode: 'history',
 	base: process.env.BASE_URL,
 	routes: [
@@ -19,9 +19,7 @@ export default new Router({
 			path: '/movies',
 			name: 'movies',
 			component: Movie,
-			beforeEnter(to, from, next){
-				store.getters.checkUser ? next() : next('/login');
-			}
+			meta: { requiresAuth: true }
 		},
 		{
 			path: '/registration',
@@ -32,6 +30,22 @@ export default new Router({
 			path: '/login',
 			name: 'login',
 			component: Login,
+		},
+		{
+			path: '*',
+			redirect: "/"
 		}
 	]
+});
+router.beforeEach((to, from, next) => {
+	const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+	if(requiresAuth){
+		store.dispatch("INIT_EVENT_FIREBASE_AUTH").then(() =>{
+				next()
+		});
+	}else{
+		next()
+	}
 })
+
+export default router

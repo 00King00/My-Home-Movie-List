@@ -18,7 +18,7 @@
 				</v-card-text>
 				<v-card-actions>
 				<v-spacer></v-spacer>
-					<v-btn color="primary"  @click="onSubmit">Login</v-btn>
+					<v-btn color="primary"  @click="onSubmit" :loading="loading">Login</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-flex>
@@ -32,8 +32,10 @@ export default {
 		errorMessage: null,
 		alert: false
 	}),
-	components: {
-
+	computed: {
+		loading(){
+			return this.$store.getters.loading
+		}
 	},
 	methods:{
 		onSubmit(){

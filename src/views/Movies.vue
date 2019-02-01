@@ -1,7 +1,8 @@
 <template lang="pug">
 	v-container(grid-list-lg)
 		v-layout(row wrap )
-			v-flex(xs12 sm6)
+			v-flex(xs12 md6)
+				v-alert(:value="!moviesList.length" color="info" icon="info" outline) You have empty movie list...
 				v-card(color="grey lighten-2" v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
 					v-card-title.pr-5.headline.light-blue--text
 						| {{item.title}}
@@ -9,21 +10,23 @@
 						v-icon close
 					v-card-text.subheadin(v-if="item.description.length")  {{item.description}}
 					v-divider
-			v-flex(xs12 sm6)
+			v-flex(xs12 md6)
 				v-card(color="grey lighten-2")
-					v-card-title.display-2.light-blue--text Search movies list
+					v-card-title.display-1.light-blue--text Search movies list
 					v-divider
 					v-card-text
 						v-text-field(prepend-icon="search" v-model="search" @input="currentPage=1" label="Search movies list")
 				v-layout(row wrap )
 					v-flex.text-xs-center(fluid)
 						v-card(color="grey lighten-2")
-							v-card-title.display-2.light-blue--text Add movies to list
+							v-card-title.display-1.light-blue--text Add movies to list
 							v-divider
 							v-card-text
 								v-text-field(prepend-icon="add" v-model="movies.title" label="Add movies")
 								v-text-field(prepend-icon="add" v-model="movies.description" label="Add movies description")
 							v-alert(type="info" :value="showMasage" dismissible) You can add some movies description later.
+							v-alert(:value="successStatus" color="success" icon="check_circle" outline) You saved successfully
+							v-alert(:value="errorStatus" color="error" icon="warning" outline dismissible) {{error}}
 							v-card-actions
 								v-btn(color="primary" @click="addMovie" :disabled="checkField")
 									v-icon add
@@ -47,6 +50,9 @@ export default {
 		currentPage: 1,
 		perPage: 7,
 		setMoviesListOnPage: 5,
+		errorStatus: null,
+		successStatus: null
+
 	}),
 	computed:{
 		moviesList(){
@@ -65,10 +71,29 @@ export default {
 		},
 		totalPage(){
 			return Math.ceil(this.filteredList.length/this.setMoviesListOnPage)
-		}
+		},
+		error(){
+			return this.$store.getters.error
+		},
+
+
 	},
 	created(){
 		this.moviesList
+		this.$bus.$on("savedData",()=>{
+			this.savedOk()
+		});
+	},
+	beforeDestroy(){
+		this.$bus.$off("savedData")
+	},
+	watch:{
+		error: function(val){
+			if(val){
+				this.errorStatus = true;
+			}
+
+		}
 	},
 	methods:{
 		deleteMovie(index){
@@ -76,6 +101,10 @@ export default {
 		},
 		onSubmit(){
 			this.$store.dispatch("SET_MOVIES_LIST")
+		},
+		savedOk(){
+				this.successStatus = true;
+				setTimeout(() => {this.successStatus = null}, 3000)
 		},
 		addMovie(){
 			this.v_alert()

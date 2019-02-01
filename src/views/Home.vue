@@ -1,20 +1,20 @@
 <template lang="pug">
 	v-container(grid-list-lg)
 		v-layout(row wrap )
-			v-flex(xs12 sm6)
-				v-card(color="grey lighten-2" v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
-					v-card-title.pr-5.headline.light-blue--text
-						| {{item.title}}
-					v-btn.light-blue--text(fab flat absolute right top @click="deleteMovie(`moviesList+${index}`)")
-						v-icon close
-					v-card-text.subheadin(v-if="item.description.length")  {{item.description}}
-					v-divider
-			v-flex(xs12 sm6)
+			v-flex(xs12)
 				v-card(color="grey lighten-2")
 					v-card-title.display-2.light-blue--text Search movies list
 					v-divider
 					v-card-text
 						v-text-field(prepend-icon="search" v-model="search" @input="currentPage=1" label="Search movies list")
+			v-flex.text-xs-center(xs12)
+				h1.display-2.light-blue--text Top 50 IMDB films
+			v-flex(xs12)
+				v-card(color="grey lighten-2" v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
+					v-card-title.pr-5.headline.light-blue--text
+						| {{item.title}}
+					v-card-text.subheadin(v-if="item.description.length")  {{item.description}}
+					v-divider(color="grey")
 				v-layout(row wrap )
 					v-flex.text-xs-center(fluid)
 						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
@@ -28,7 +28,7 @@ export default {
 		search: "",
 		currentPage: 1,
 		perPage: 7,
-		setMoviesListOnPage: 5,
+		setMoviesListOnPage: 10,
 		list: []
 	}),
 	computed:{
@@ -48,22 +48,15 @@ export default {
 		}
 	},
 	created(){
-		firebase.database().ref('defaultMoviesList').once('value')
+		firebase.database().ref('defaultMoviesList/').once('value')
 			.then(snapshot=>{
 				let lists = snapshot.val();
-				const arrList = [];
-				Object.keys(lists).map(key=>{
-					arrList.push(lists[key]);
-				});
-				this.list = arrList[0];
+				this.list = lists
 			})
 			.catch(error => console.log(error));
 	},
 	methods:{
-		deleteMovie(index){
-			this.$store.commit("deleteMovie", index);
-		},
-		paginator(list){
+			paginator(list){
 			let page = this.currentPage;
 			let setMoviesListOnPage = this.setMoviesListOnPage;
 			let from = (page * setMoviesListOnPage) - setMoviesListOnPage;

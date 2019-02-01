@@ -1,7 +1,9 @@
 import firebase from 'firebase'
 export default {
 	state: {
-		user: null
+		user: null,
+		unsubscribeAuth: null
+
 	},
 	getters:{
 		checkUser(state){
@@ -17,9 +19,30 @@ export default {
 		},
 		sign_out(state, payload){
 			state.user = payload
+		},
+		set_unsubscribeAuth(state, payload){
+			state.unsubscribeAuth = payload
+		},
+		set_unsubscribeAuth(state, payload){
+			state.unsubscribeAuth = payload
 		}
 	},
 	actions: {
+		INIT_EVENT_FIREBASE_AUTH({dispatch, commit, state}){
+			return new Promise(function(resolve, reject) {
+				if (state.unsubscribeAuth) {
+					state.unsubscribeAuth()
+				}
+				let unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
+					if(user){
+						dispatch('SET_USER', user);
+						dispatch("GET_MOVIES_LIST");
+						resolve(user);
+					}
+				});
+				commit('set_unsubscribeAuth', unsubscribeAuth)
+			});
+		},
 		async REGISTER_USER({commit}, {email, password}){
 			commit('clear_error');
 			commit('set_loading', true);
@@ -39,7 +62,6 @@ export default {
 			commit('set_loading', true);
 			try{
 				const user = await firebase.auth().signInWithEmailAndPassword(email, password);
-				console.log(user.user);
 				commit('set_user', user.user);
 				commit('set_loading', false);
 			}catch(error){

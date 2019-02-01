@@ -5,13 +5,11 @@
 			v-container(fluid)
 				router-view
 		app-footer
-
 </template>
 <script>
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 import firebase from 'firebase'
-
 // Initialize Firebase
 const config = {
 	apiKey: "AIzaSyDlsIo-YbDgfa_kKR-1rgdDCTWUX9HjGCw",
@@ -21,21 +19,13 @@ const config = {
 	storageBucket: "my-home-movie-list.appspot.com",
 	messagingSenderId: "1031099148086"
 };
-
+firebase.initializeApp(config);
 export default {
 	components: {
 		AppHeader,
 		AppFooter
 	},
 	created(){
-		firebase.initializeApp(config);
-		firebase.auth().onAuthStateChanged(user => {
-			if(user){
-				this.$store.dispatch('SET_USER', user);
-				console.log(user);
-				this.$store.dispatch("GET_MOVIES_LIST")
-			}
-		})
 	}
 }
 </script>
