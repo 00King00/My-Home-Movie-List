@@ -22,9 +22,6 @@ export default {
 		set_unsubscribeAuth(state, payload){
 			state.unsubscribeAuth = payload
 		},
-		set_unsubscribeAuth(state, payload){
-			state.unsubscribeAuth = payload
-		}
 	},
 	actions: {
 		INIT_EVENT_FIREBASE_AUTH({dispatch, commit, state}){
@@ -68,7 +65,6 @@ export default {
 				commit('set_loading', false);
 				throw error
 			}
-
 		},
 		SET_USER({commit}, payload){
 			commit('set_user', payload)

@@ -10,19 +10,14 @@
 			v-flex.text-xs-center(xs12)
 				h1.display-2.light-blue--text Top 50 IMDB films
 			v-flex(xs12)
-				//v-card(color="grey lighten-2" v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
-					v-card-title.pr-5.headline.light-blue--text
-						| {{item.title}}
-					v-card-text.subheadin(v-if="item.description.length")  {{item.description}}
-					v-divider(color="grey")
 				v-list(color="grey lighten-2" subheader two-line)
 					v-list-tile(v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
 						v-list-tile-content
 							v-list-tile-title {{ item.title }}
 							v-list-tile-sub-title {{ item.description }}
-
+					v-divider
 				v-layout(row wrap )
-					v-flex.text-xs-center(fluid)
+					v-flex.text-xs-center(fluid v-if="displayedList.length")
 						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
 </template>
 <script>
@@ -53,7 +48,7 @@ export default {
 		}
 	},
 	created(){
-		if(this.list.length){
+		if(this.displayedList.length == 0){
 			firebase.database().ref('defaultMoviesList/').once('value')
 				.then(snapshot=>{
 					let lists = snapshot.val();

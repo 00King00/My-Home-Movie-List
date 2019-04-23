@@ -11,7 +11,7 @@
 					v-card-text.subheadin(v-if="item.description.length")  {{item.description}}
 					v-divider
 				v-layout(row wrap md6)
-					v-flex.text-xs-center(fluid)
+					v-flex.text-xs-center(fluid v-if="displayedList.length")
 						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
 			v-flex(xs12 md6 order-xs1 order-md2 )
 				v-card(color="grey lighten-2")
