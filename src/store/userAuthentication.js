@@ -3,7 +3,6 @@ export default {
 	state: {
 		user: null,
 		unsubscribeAuth: null
-
 	},
 	getters:{
 		checkUser(state){

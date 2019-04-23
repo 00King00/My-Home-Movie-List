@@ -1,7 +1,7 @@
 <template lang="pug">
 	v-container(grid-list-lg)
 		v-layout(row wrap )
-			v-flex(xs12 md6)
+			v-flex(xs12 md6 order-xs2 order-md1 )
 				v-alert(:value="!moviesList.length" color="info" icon="info" outline) You have empty movie list...
 				v-card(color="grey lighten-2" v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
 					v-card-title.pr-5.headline.light-blue--text
@@ -10,13 +10,16 @@
 						v-icon close
 					v-card-text.subheadin(v-if="item.description.length")  {{item.description}}
 					v-divider
-			v-flex(xs12 md6)
+				v-layout(row wrap md6)
+					v-flex.text-xs-center(fluid)
+						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
+			v-flex(xs12 md6 order-xs1 order-md2 )
 				v-card(color="grey lighten-2")
 					v-card-title.display-1.light-blue--text Search movies list
 					v-divider
 					v-card-text
 						v-text-field(prepend-icon="search" v-model="search" @input="currentPage=1" label="Search movies list")
-				v-layout(row wrap )
+				v-layout(row wrap md6)
 					v-flex.text-xs-center(fluid)
 						v-card(color="grey lighten-2")
 							v-card-title.display-1.light-blue--text Add movies to list
@@ -35,8 +38,6 @@
 								v-btn(color="success" @click='onSubmit')
 									v-icon save
 									| Save
-						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
-
 </template>
 <script>
 export default {
@@ -52,7 +53,6 @@ export default {
 		setMoviesListOnPage: 5,
 		errorStatus: null,
 		successStatus: null
-
 	}),
 	computed:{
 		moviesList(){
@@ -75,8 +75,6 @@ export default {
 		error(){
 			return this.$store.getters.error
 		},
-
-
 	},
 	created(){
 		this.moviesList

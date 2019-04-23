@@ -1,5 +1,5 @@
 <template lang="pug">
-	v-footer(dark )
+	v-footer(dark)
 		v-card.flex(flat tile)
 			v-card-title.cyan
 				strong.subheading Get connected with us on social networks!
@@ -15,14 +15,13 @@ export default {
 	data: () => ({
       icons: [
         'fab fa-facebook',
-        'fab fa-twitter',
         'fab fa-google-plus',
         'fab fa-linkedin',
-        'fab fa-instagram'
       ]
     })
 }
 </script>
 
-<style lang="css">
+<style lang="sass">
+	
 </style>
