@@ -32,7 +32,6 @@ export default {
 				let unsubscribeAuth = firebase.auth().onAuthStateChanged(user => {
 					if(user){
 						dispatch('SET_USER', user);
-						dispatch("GET_MOVIES_LIST");
 						resolve(user);
 					}
 				});

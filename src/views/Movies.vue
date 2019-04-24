@@ -77,10 +77,14 @@ export default {
 		},
 	},
 	created(){
-		this.moviesList
 		this.$bus.$on("savedData",()=>{
 			this.savedOk()
 		});
+		if(this.moviesList.length == 0){
+			this.$store.dispatch("GET_MOVIES_LIST");
+		}
+
+
 	},
 	beforeDestroy(){
 		this.$bus.$off("savedData")
@@ -90,7 +94,6 @@ export default {
 			if(val){
 				this.errorStatus = true;
 			}
-
 		}
 	},
 	methods:{
@@ -133,5 +136,4 @@ export default {
 	top: 5px
 .v-btn--right
 	right: 0
-
 </style>

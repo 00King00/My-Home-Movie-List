@@ -31,11 +31,11 @@ export default {
 		currentPage: 1,
 		perPage: 7,
 		setMoviesListOnPage: 10,
-		list: [],
-		loading: false
-		
+
 	}),
 	computed:{
+		list(){return this.$store.getters.getHomeList},
+		loading(){return this.$store.getters.getLoading},
 		moviesList(){
 			return this.list
 		},
@@ -52,15 +52,16 @@ export default {
 		}
 	},
 	created(){
-		if(this.displayedList.length == 0){
-			this.loading = true;
-			firebase.database().ref('defaultMoviesList/').once('value')
-				.then(snapshot=>{
-					let lists = snapshot.val();
-					this.list = lists;
-					this.loading = false;
-				})
-				.catch(error => console.log(error));
+		if(this.list.length == 0){
+			this.$store.dispatch("GET_HOME_LIST")
+			//this.loading = true;
+			//firebase.database().ref('defaultMoviesList/').once('value')
+				//.then(snapshot=>{
+				// 	let lists = snapshot.val();
+				// 	this.list = lists;
+				// 	this.loading = false;
+				// //})
+				// .catch(error => console.log(error));
 		}
 
 	},

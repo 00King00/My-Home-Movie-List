@@ -4,10 +4,18 @@ import eventBus from '@/eventBus'
 export default{
 	state: {
 		movies: [],
+		homelist: [],
+		loading: false
 	},
 	getters:{
 		moviesList(state){
 			return state.movies
+		},
+		getHomeList(state){
+			return state.homelist
+		},
+		getLoading(state){
+			return state.loading
 		}
 	},
 	mutations: {
@@ -20,17 +28,33 @@ export default{
 		set_movies_list(state, payload){
 			state.movies = payload || []
 		},
+		set_home_list(state, payload){
+			state.homelist = payload || []
+		},
 		clear_movies(state){
 			state.movies = [];
+		},
+		set_loading(state, payload){
+			state.loading = payload
 		}
 	},
 	actions: {
 		GET_MOVIES_LIST({commit}){
+			console.log('test');
 			const urlDb = 'moviesList/' + store.state.userAuthentication.user.id;
 			firebase.database().ref(urlDb).once('value').then(snapshot=>{
 				let lists = snapshot.val();
 				commit('set_movies_list', lists)
 			}).catch(error => console.log(error))
+		},
+		async GET_HOME_LIST({commit}){
+			commit('set_loading', true)
+			await firebase.database().ref('defaultMoviesList/').once('value')
+				.then(snapshot => {
+					let lists = snapshot.val();
+					commit('set_home_list', lists)
+					commit('set_loading', false)
+				}).catch(error => console.log(error));
 		},
 		async SET_MOVIES_LIST({commit, state}){
 			commit('clear_error');
@@ -46,5 +70,6 @@ export default{
 				throw error
 			}
 		},
+
 	}
 }
