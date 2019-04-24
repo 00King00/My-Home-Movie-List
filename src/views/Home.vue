@@ -1,24 +1,26 @@
 <template lang="pug">
-	v-container(grid-list-lg)
+	v-container(grid-list-lg align-center)
 		v-layout(row wrap )
 			v-flex(xs12)
 				v-card(color="grey lighten-2")
-					v-card-title.display-2.light-blue--text Search movies list
+					.display-1.light-blue--text.text-xs-center.py-2 Search movies list
 					v-divider
 					v-card-text
 						v-text-field(prepend-icon="search" v-model="search" @input="currentPage=1" label="Search movies list")
 			v-flex.text-xs-center(xs12)
-				h1.display-2.light-blue--text Top 50 IMDB films
-			v-flex(xs12)
-				v-list(color="grey lighten-2" subheader two-line)
-					v-list-tile(v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
-						v-list-tile-content
-							v-list-tile-title {{ item.title }}
-							v-list-tile-sub-title {{ item.description }}
-					v-divider
+				h1.display-1.light-blue--text Top 50 IMDB films
+			v-flex(xs12).text-xs-center
+				v-progress-circular(v-if="loading" :size='170', :width='7', color='info', indeterminate)
+				v-expansion-panel()
+					v-expansion-panel-content.light-blue--text(v-for="(item, index) in displayedList" :key="`moviesList+${index}`")
+						div(slot="header" color='light-blue' ) {{ item.title }}
+						v-icon(slot='actions', color='light-blue') keyboard_arrow_down
+						v-card
+							v-card-text.px-4.grey--text  {{ item.description }}
 				v-layout(row wrap )
 					v-flex.text-xs-center(fluid v-if="displayedList.length")
 						v-pagination(v-model="currentPage" :length="totalPage" :total-visible="perPage")
+			v-flex(xs12)
 </template>
 <script>
 import firebase from 'firebase/app'
@@ -29,7 +31,9 @@ export default {
 		currentPage: 1,
 		perPage: 7,
 		setMoviesListOnPage: 10,
-		list: []
+		list: [],
+		loading: false
+		
 	}),
 	computed:{
 		moviesList(){
@@ -49,10 +53,12 @@ export default {
 	},
 	created(){
 		if(this.displayedList.length == 0){
+			this.loading = true;
 			firebase.database().ref('defaultMoviesList/').once('value')
 				.then(snapshot=>{
 					let lists = snapshot.val();
-					this.list = lists
+					this.list = lists;
+					this.loading = false;
 				})
 				.catch(error => console.log(error));
 		}
@@ -60,11 +66,11 @@ export default {
 	},
 	methods:{
 			paginator(list){
-			let page = this.currentPage;
-			let setMoviesListOnPage = this.setMoviesListOnPage;
-			let from = (page * setMoviesListOnPage) - setMoviesListOnPage;
-			let to = (page * setMoviesListOnPage);
-			return list.slice(from, to);
+				let page = this.currentPage;
+				let setMoviesListOnPage = this.setMoviesListOnPage;
+				let from = (page * setMoviesListOnPage) - setMoviesListOnPage;
+				let to = (page * setMoviesListOnPage);
+				return list.slice(from, to);
 		}
 
 	}
